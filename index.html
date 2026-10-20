@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Project Phoenix: early wildfire detection from the air</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#efe7d6;--wash:#e6dcc4;--text:#1b2f27;--muted:#5c6a5f;--ember:#c8431a;--rule:#cfc5ad;--moss:#5e7a58;
+--serif:"Fraunces",Georgia,"Times New Roman",serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#13241d;--wash:#183027;--text:#eee6d3;--muted:#a3b0a2;--ember:#ff7a45;--rule:#2c443a;--moss:#8fb184}}
+:root[data-theme="dark"]{--bg:#13241d;--wash:#183027;--text:#eee6d3;--muted:#a3b0a2;--ember:#ff7a45;--rule:#2c443a;--moss:#8fb184}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--serif);font-size:1.08rem;line-height:1.7}
+.w{max-width:1020px;margin:0 auto;padding:0 22px}
+.mono{font-family:var(--mono);font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+nav{display:flex;justify-content:space-between;align-items:baseline;padding:22px 0;gap:12px;flex-wrap:wrap}
+nav b{font-family:var(--mono);font-size:.85rem;letter-spacing:.14em;font-weight:500}
+nav b i{color:var(--ember);font-style:normal}
+nav a{font-family:var(--mono);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-decoration:none;margin-left:20px}
+nav a:hover{color:var(--ember)}
+.lg{font-family:var(--mono);font-size:.75rem;letter-spacing:.1em;color:var(--text);background:transparent;border:1px solid var(--text);border-radius:999px;padding:3px 12px;margin-left:20px;cursor:pointer}
+.lg:hover{color:var(--ember);border-color:var(--ember)}
+.hero{display:grid;grid-template-columns:1.15fr 1fr;gap:34px;align-items:center;padding:36px 0 70px}
+h1{font-weight:800;font-size:clamp(2.3rem,6.2vw,4.3rem);line-height:1.02;letter-spacing:-.025em;margin:16px 0 22px}
+h1 em{font-style:italic;font-weight:400;color:var(--ember)}
+.lede{max-width:34rem;color:var(--muted);font-size:1.18rem;margin:0}
+.map{width:100%;height:auto;display:block}
+.map .c{fill:none;stroke:var(--text);stroke-width:1.1;opacity:.55}
+.map .c.f{fill:var(--wash);opacity:.9}
+.map .route{fill:none;stroke:var(--moss);stroke-width:1.6;stroke-dasharray:5 7}
+.map .pulse{fill:none;stroke:var(--ember);stroke-width:1.5;transform-box:fill-box;transform-origin:center;animation:p 2.6s ease-out infinite}
+.map .pulse.b{animation-delay:1.3s}
+.map text{font-family:var(--mono);font-size:10px;letter-spacing:.08em;fill:var(--muted)}
+@keyframes p{from{transform:scale(.3);opacity:1}to{transform:scale(2.6);opacity:0}}
+@media (prefers-reduced-motion:reduce){.map .pulse{animation:none;opacity:.5}}
+section{padding:72px 0;border-top:1px solid var(--rule)}
+section.alt{background:var(--wash)}
+h2{font-weight:800;font-size:clamp(1.8rem,4.2vw,2.7rem);line-height:1.1;letter-spacing:-.02em;margin:10px 0 28px;max-width:20ch}
+.story{display:grid;grid-template-columns:1fr 240px;gap:48px;align-items:start}
+.story p{margin:0 0 1.15em;max-width:38rem}
+.story p:first-of-type::first-letter{font-weight:800;font-size:3.6rem;float:left;line-height:.85;padding:6px 10px 0 0;color:var(--ember)}
+.note{border-left:3px solid var(--ember);padding:2px 0 2px 18px;font-style:italic;font-size:1.15rem;line-height:1.45;position:sticky;top:24px}
+.note span{display:block;margin-top:10px;font-style:normal}
+ol.tl{list-style:none;margin:36px 0 0;padding:0 0 0 34px;border-left:1px solid var(--moss);max-width:44rem}
+ol.tl li{position:relative;padding:0 0 38px}
+ol.tl li:last-child{padding-bottom:0}
+ol.tl li::before{content:"";position:absolute;left:-41px;top:.45em;width:13px;height:13px;border-radius:50%;background:var(--bg);border:2px solid var(--moss)}
+ol.tl li:last-child::before{background:var(--ember);border-color:var(--ember)}
+ol.tl h3{font-size:1.55rem;font-weight:600;margin:4px 0 4px}
+ol.tl p{margin:0;color:var(--muted)}
+.aside{margin-top:30px;font-family:var(--mono);font-size:.82rem;color:var(--muted);border:1px dashed var(--moss);padding:12px 16px;max-width:44rem}
+.rows{border-top:1px solid var(--text)}
+.row{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.3fr);gap:28px;padding:24px 0;border-bottom:1px solid var(--rule);align-items:baseline}
+.row h3{font-size:1.5rem;font-weight:600;font-style:italic;line-height:1.2;margin:0}
+.row p{margin:0;color:var(--muted)}
+.st{display:grid;grid-template-columns:130px 1fr;gap:20px;padding:16px 0;border-bottom:1px solid var(--rule);align-items:baseline}
+.tag{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--moss)}
+.tag.now{color:var(--ember)}
+.tag::before{content:"● ";font-size:.8em}
+.st p{margin:0}
+.st small{display:block;color:var(--muted);font-size:.92rem}
+.close{text-align:center;padding:96px 0 84px}
+.close p{font-size:clamp(1.5rem,3.6vw,2.3rem);font-weight:600;line-height:1.25;max-width:26ch;margin:0 auto 18px}
+footer{border-top:1px solid var(--rule);padding:26px 0 36px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+@media (max-width:760px){
+.hero{grid-template-columns:1fr;padding-bottom:50px}
+.story{grid-template-columns:1fr;gap:28px}
+.note{position:static}
+.row{grid-template-columns:1fr;gap:8px}
+.st{grid-template-columns:1fr;gap:4px}
+section{padding:54px 0}
+nav a{margin-left:0;margin-right:16px}
+.lg{margin-left:0}
+}
+</style>
+</head>
+<body>
+<div class="w">
+<nav><b>PROJECT <i>PHOENIX</i></b><div><a href="#why">Why</a><a href="#how">How</a><a href="#values">Principles</a><a href="#status">Status</a><button id="lang" class="lg" type="button" aria-label="Switch language">MK</button></div></nav>
+
+<header class="hero">
+<div>
+<div class="mono">Field notes · Strumica, North Macedonia</div>
+<h1>Every big fire starts as a small one <em>nobody saw.</em></h1>
+<p class="lede">Phoenix is a drone-mounted smoke and fire detector, built by students. It looks for the first wisp, works out whether it is real, and puts an alert in your pocket.</p>
+</div>
+<svg class="map" viewBox="0 0 600 480" role="img" aria-label="Contour map of a hillside with a drone route and a detected fire point">
+<path class="c f" d="M300 60C400 50 520 110 540 210 560 320 470 420 340 430 210 440 80 380 70 260 60 140 190 70 300 60Z"/>
+<path class="c" d="M300 110C380 105 480 150 490 230 500 320 430 385 335 390 235 395 130 345 122 260 115 170 215 115 300 110Z"/>
+<path class="c" d="M305 160C365 158 435 190 440 245 445 305 395 345 335 348 265 350 185 315 180 260 175 205 245 162 305 160Z"/>
+<path class="c" d="M308 205C345 203 385 225 388 255 391 290 360 312 328 314 290 316 240 295 238 262 236 232 270 207 308 205Z"/>
+<path class="c" d="M312 245C332 244 350 255 350 270 350 285 335 294 318 294 298 294 282 283 282 268 282 255 295 246 312 245Z"/>
+<path id="r" class="route" d="M30 400C140 300 200 420 300 330S470 160 570 110"/>
+<g stroke="var(--text)" stroke-width="2" fill="none"><path d="M-7 0H7M0 -7V7"/><circle r="3" fill="var(--bg)"/><animateMotion dur="16s" repeatCount="indefinite"><mpath href="#r"/></animateMotion></g>
+<circle cx="412" cy="236" r="5" fill="var(--ember)"/>
+<circle class="pulse" cx="412" cy="236" r="12"/>
+<circle class="pulse b" cx="412" cy="236" r="12"/>
+<text x="428" y="226">SMOKE · 14:07</text>
+<text x="30" y="428">DRONE ROUTE</text>
+<text x="30" y="454">NOT TO SCALE</text>
+</svg>
+</header>
+</div>
+
+<section id="why" class="alt"><div class="w">
+<div class="mono">Why we’re doing this</div>
+<h2>The gap between “it started” and “someone noticed.”</h2>
+<div class="story">
+<div>
+<p>Summers around Strumicko are dry, and the hills burn. The fires that end up in the news almost always began as something tiny: a thin thread of smoke on a slope that nobody happened to be looking at.</p>
+<p>That gap, between the first spark and the first person who sees it, is where a fire you can put out turns into one you can only watch. Closing it is mostly a question of seeing earlier, and seeing more of the land than a few people with binoculars ever could.</p>
+<p>The tools that do this already exist: satellites, thermal cameras, networks of towers. They are also expensive, and built for governments, not for a village, a municipality or a school club. So we asked a different question. How far can you get with an ordinary camera, free software and a handful of cheap parts?</p>
+<p>We are students. We don’t think that is a reason to wait for someone else to solve it.</p>
+</div>
+<aside class="note"><em>How cheap can early warning get before it stops working?</em><span class="mono">The question we started with</span></aside>
+</div>
+</div></section>
+
+<section id="how"><div class="w">
+<div class="mono">How it works</div>
+<h2>From the first wisp to your phone.</h2>
+<ol class="tl">
+<li><div class="mono">Step one</div><h3>Fly</h3><p>The drone follows its own route over the terrain. Our system rides along as a passenger; it does not control the flight.</p></li>
+<li><div class="mono">Step two</div><h3>Look</h3><p>A small camera streams what is below. No thermal sensor, just ordinary video, which is exactly what keeps the cost down.</p></li>
+<li><div class="mono">Step three</div><h3>Judge</h3><p>Software studies every frame for the colour, texture and movement of smoke and flame, and tries to tell them apart from things that only look like fire.</p></li>
+<li><div class="mono">Step four</div><h3>Tell</h3><p>A confirmed detection becomes a notification on a phone or laptop, so a person can decide what happens next.</p></li>
+</ol>
+<div class="aside">Right now the judging step runs on a laptop. Moving it onto the drone comes later.</div>
+</div></section>
+
+<section id="values" class="alt"><div class="w">
+<div class="mono">What we hold ourselves to</div>
+<h2>Four rules we won’t bend.</h2>
+<div class="rows">
+<div class="row"><h3>Cheap enough to copy.</h3><p>If it needs a budget only a ministry has, it isn’t an answer for most places. Every part choice starts with the price.</p></div>
+<div class="row"><h3>Honest about what it is.</h3><p>This is a student prototype. It will miss things and sometimes raise a false alarm. We would rather show that than hide it.</p></div>
+<div class="row"><h3>Alert, never act.</h3><p>Phoenix tells people. Humans decide what to do about a fire, and no software should take that from them.</p></div>
+<div class="row"><h3>Open by default.</h3><p>The detection code is being prepared for GitHub, so anyone can read it, improve it, or build their own version.</p></div>
+</div>
+</div></section>
+
+<section id="status"><div class="w">
+<div class="mono">Where we are</div>
+<h2>A prototype, in plain terms.</h2>
+<div>
+<div class="st"><span class="tag now">In progress</span><p>Fire and smoke detection in Python<small>Works on images, video and a live camera feed.</small></p></div>
+<div class="st"><span class="tag now">In progress</span><p>Detection hosted on a laptop<small>The current setup while we test and tune.</small></p></div>
+<div class="st"><span class="tag">Next</span><p>Small camera mounted on the drone<small>A compact camera instead of a wired webcam.</small></p></div>
+<div class="st"><span class="tag">Next</span><p>Alerts to a phone<small>Push notification the moment something is detected.</small></p></div>
+<div class="st"><span class="tag">Later</span><p>Public GitHub repository<small>Code, parts list and build notes for anyone to reuse.</small></p></div>
+</div>
+</div></section>
+
+<section class="alt"><div class="w close">
+<p>Fire season is coming back every year. Early warning shouldn’t depend on who can afford it.</p>
+<div class="mono">Project Phoenix · Strumica</div>
+</div></section>
+
+<div class="w"><footer><span class="mono">© 2026 Project Phoenix</span><span class="mono">By students, for everyone</span></footer></div>
+<script>
+(function(){
+var MK=[
+`Zasto`,`Kako`,`Principi`,`Status`,
+`Terenski zabeleski · Strumica, Severna Makedonija`,
+`Sekoj golem pozar pocnuva kako mal, <em>koj nikoj ne go videl.</em>`,
+`Phoenix e detektor na dim i ogan montiran na dron, napraven od ucenici. Go bara prviot dim, utvrduva dali e vistinski i ti isprakja alarm pravo vo dzebot.`,
+`DIM · 14:07`,`RUTA NA DRONOT`,`NE E VO RAZMER`,
+`Zasto go pravime ova`,
+`Prazninata pomegu „pocna“ i „nekoj zabelezal“.`,
+`Letata okolu Strumicko se suvi, a ridovite gorat. Pozarite sto zavrsuvaat vo vestite skoro sekogas pocnale kako nesto sitno: tenok konec dim na nekoja padina kon koja nikoj slucajno ne gledal.`,
+`Taa praznina, pomegu prvata iskra i prviot covek koj ja zabelezuva, e mestoto kade sto pozar koj moze da se ugasi se pretvora vo pozar koj mozes samo da go gledas. Zatvoraneto na taa praznina e pred se pitanje na toa da vidis porano, i da vidis pogolem del od zemjata otkolku sto ke mozele nekolku lugje so dalekozori.`,
+`Alatkite koi go pravat toa veke postojat: sateliti, termalni kameri, mrezi od kuli. No se i skapi, i napraveni se za drzavi, a ne za selo, opstina ili ucilisen klub. Zatoa postavivme drugo prasanje: kolku daleku mozes da stignes so obicna kamera, besplaten softver i nekolku evtini delovi?`,
+`Nie sme ucenici. Ne mislime deka toa e pricina da cekame nekoj drug da go resi.`,
+`Kolku evtino moze da bide ranoto predupreduvanje, pred da prestane da raboti?`,
+`Prasanjeto so koe pocnavme`,
+`Kako funkcionira`,
+`Od prviot dim do tvojot telefon.`,
+`Cekor prv`,`Leti`,`Dronot si ja sledi svojata ruta nad terenot. Nasiot sistem patuva so nego kako patnik; ne go kontrolira letot.`,
+`Cekor vtor`,`Gledaj`,`Mala kamera go prenesuva toa sto e dolu. Nema termalen senzor, samo obicno video, a toa e tocno sto ja drzi cenata niska.`,
+`Cekor tret`,`Procenuvaj`,`Softverot go proucuva sekoj kadar za boja, tekstura i dvizenje na dim i plamen, i se obiduva da gi razlikuva od raboti koi samo licat na ogan.`,
+`Cekor cetvrti`,`Javi`,`Potvrdenata detekcija stanuva izvestuvanje na telefon ili laptop, za covek da odluci sto sledi.`,
+`Momentalno cekorot na procenuvanje raboti na laptop. Premestuvanjeto na dronot doagja podocna.`,
+`Za sto se drzime`,
+`Cetiri pravila koi nema da gi prekrsime.`,
+`Dovolno evtino za da se kopira.`,`Ako mu treba budzet koj go imaat samo ministerstvata, ne e odgovor za pogolemiot del od mestata. Sekoj izbor na del pocnuva od cenata.`,
+`Iskreni za toa sto e.`,`Ova e ucenicki prototip. Ke propusti raboti i povremeno ke digne laziven alarm. Podobro da go pokazeme toa otkolku da go krieme.`,
+`Javuva, nikogas ne postapuva.`,`Phoenix im kazuva na lugjeto. Lugjeto odlucuvaat sto da pravat so pozarot, i nikoj softver ne treba da im go zeme toa.`,
+`Otvoren od start.`,`Kodot za detekcija se podgotvuva za GitHub, za sekoj da moze da go procita, podobri ili da napravi svoja verzija.`,
+`Kade sme sega`,
+`Prototip, jasno kazano.`,
+`Vo tek`,`Detekcija na ogan i dim vo Python<small>Raboti na slici, video i kamera v zivo.</small>`,
+`Vo tek`,`Detekcija hostirana na laptop<small>Momentalnata postavka dodeka testirame i podesuvame.</small>`,
+`Sledno`,`Mala kamera montirana na dronot<small>Kompaktna kamera namesto zicna veb-kamera.</small>`,
+`Sledno`,`Izvestuvanja na telefon<small>Notifikacija vednas stom ke se detektira nesto.</small>`,
+`Podocna`,`Javno GitHub repozitorium<small>Kod, lista na delovi i zabeleski za gradenje za sekoj koj saka da go iskoristi.</small>`,
+`Sezonata na pozari se vrakja sekoja godina. Ranoto predupreduvanje ne treba da zavisi od toa koj moze da si dozvoli.`,
+`Project Phoenix · Strumica`,
+`© 2026 Project Phoenix`,`Od ucenici, za sekogo`
+];
+var btn=document.getElementById('lang');
+var els=document.querySelectorAll('nav a, .mono, h1, h2, h3, .lede, .story p, .note em, .aside, .tag, .st p, .row p, ol.tl p, .close p, svg text');
+if(els.length!==MK.length){btn.hidden=true;return;}
+els.forEach(function(e){e.dataset.en=e.innerHTML;});
+var t0=document.title,t1='Project Phoenix: rano otkrivanje na pozari od vozduh';
+function set(l){
+els.forEach(function(e,i){e.innerHTML=l==='mk'?MK[i]:e.dataset.en;});
+document.documentElement.lang=l==='mk'?'mk':'en';
+document.title=l==='mk'?t1:t0;
+btn.textContent=l==='mk'?'EN':'MK';
+try{localStorage.setItem('phoenix-lang',l);}catch(x){}
+}
+btn.addEventListener('click',function(){set(document.documentElement.lang==='mk'?'en':'mk');});
+var s=null;try{s=localStorage.getItem('phoenix-lang');}catch(x){}
+if(s==='mk')set('mk');
+})();
+</script>
+</body>
+</html>
